@@ -2,6 +2,7 @@ local GladiusEx = _G.GladiusEx
 local L = LibStub("AceLocale-3.0"):GetLocale("GladiusEx")
 local LSM = LibStub("LibSharedMedia-3.0")
 local CT = LibStub("LibCooldownTracker-1.0")
+local LCG = LibStub("LibCustomGlow-1.0")
 local fn = LibStub("LibFunctional-1.0")
 
 -- global functions
@@ -144,13 +145,13 @@ local function GetDefaultSpells()
 			[23920] = true, -- Warrior/Spell Reflection
 		},
 		{ -- group 2
-			[195710] = true, -- Honorable Medallion
-			[208683] = true, -- Gladiator's Medallion
-			[214027] = true, -- Adaptation
-			[196029] = true, -- Relentless
+			[336126] = true, -- Gladiator's Medallion
+			[336135] = true, -- Adaptation
+			[336128] = true, -- Relentless
 		}
 	}
 end
+
 
 local function MakeGroupDb(settings)
 	local defaults = {
@@ -196,6 +197,10 @@ local function MakeGroupDb(settings)
 			["uncat"] =       { r = 1, g = 1, b = 1 },
 		},
 		cooldownsHideTalentsUntilDetected = true,
+		cooldownsOffCdScale = 1.5,
+		cooldownsOffCdDuration = 0.3,
+		cooldownsOnUseScale = 1.5,
+		cooldownsOnUseDuration = 0.3,
 	}
 	return fn.merge(defaults, settings or {})
 end
@@ -415,34 +420,91 @@ function Cooldowns:LCT_CooldownDetected(event, unit, spellid)
 	self:UpdateIcons(unit)
 end
 
+local function CooldownFrame_Pulse(frame, duration, scale)
+	if OmniCC then
+		OmniCC.FX:Run(frame, "pulse")
+		return
+	end
+
+  local ag = frame.icon_frame:CreateAnimationGroup()
+
+  local cdAnim = ag:CreateAnimation("Scale")
+  cdAnim:SetScale(scale, scale)
+  cdAnim:SetDuration(duration)
+  cdAnim:SetSmoothing("IN")
+
+  local texture = frame.icon_frame:CreateTexture()
+  texture:SetTexture([[Interface/Cooldown/star4]])
+  texture:SetAlpha(0)
+  texture:SetAllPoints()
+  texture:SetBlendMode("ADD")
+
+  local sfAg = texture:CreateAnimationGroup() 
+
+  local alpha1 = sfAg:CreateAnimation("Alpha")
+  alpha1:SetFromAlpha(0)
+  alpha1:SetToAlpha(1)
+  alpha1:SetDuration(0)
+  alpha1:SetOrder(1)
+
+  local scale1 = sfAg:CreateAnimation("Scale")
+  scale1:SetScale(1.5, 1.5)
+  scale1:SetDuration(0)
+  scale1:SetOrder(1)
+
+  local scale2 = sfAg:CreateAnimation("Scale")
+  scale2:SetScale(0, 0)
+  scale2:SetDuration(duration)
+  scale2:SetOrder(2)
+
+  local rotation2 = sfAg:CreateAnimation("Rotation")
+  rotation2:SetDegrees(90)
+  rotation2:SetDuration(duration)
+  rotation2:SetOrder(2)
+
+  ag:Play()
+  sfAg:Play()
+end
+
 local function CooldownFrame_OnUpdate(frame)
 	local tracked = frame.tracked
 	local now = GetTime()
+	local db = Cooldowns:GetGroupDB(frame.unit, frame.group)
 
 	if tracked and (not tracked.charges_detected or not tracked.charges or tracked.charges <= 0) then
 		if tracked.used_start and ((not tracked.used_end and not tracked.cooldown_start) or (tracked.used_end and tracked.used_end > now)) then
 			-- using
 			if frame.state == 0 then
 				if tracked.used_end then
+          LCG.ButtonGlow_Start(frame)
 					frame.cooldown:SetReverse(true)
-					CooldownFrame_Set(frame.cooldown, tracked.used_start, tracked.used_end - tracked.used_start, 1)
 					frame.cooldown:Show()
+					CooldownFrame_Set(frame.cooldown, tracked.used_start, tracked.used_end - tracked.used_start, 1)
+
+          -- Just got used CD: pulse to show usage
+          -- We somehow end up in that piece of code often, so for the whole duration of the effect,
+          --  tag a boolean.
+          if not frame.pulsing then
+            frame.pulsing = true
+            CooldownFrame_Pulse(frame, db.cooldownsOnUseDuration, db.cooldownsOnUseScale)
+          end
 				else
 					frame.cooldown:Hide()
 				end
-				local a = Cooldowns:GetGroupDB(frame.unit, frame.group).cooldownsIconUsingAlpha
-				local ab = Cooldowns:GetGroupDB(frame.unit, frame.group).cooldownsBorderUsingAlpha
+				local a = db.cooldownsIconUsingAlpha
+				local ab = db.cooldownsBorderUsingAlpha
 				frame:SetBackdropBorderColor(frame.color.r, frame.color.g, frame.color.b, ab)
 				frame.icon_frame:SetAlpha(a)
 				frame.state = 1
-			end
+      end
 			return
 		end
+
 		if tracked.used_start and not tracked.cooldown_start and frame.spelldata.active_until_cooldown_start then
-			-- waiting to be used (inner focus)
+			-- waiting to be used (cold blood)
 			if frame.state ~= 2 then
-				local a = Cooldowns:GetGroupDB(frame.unit, frame.group).cooldownsIconUsingAlpha
-				local ab = Cooldowns:GetGroupDB(frame.unit, frame.group).cooldownsBorderUsingAlpha
+				local a = db.cooldownsIconUsingAlpha
+				local ab = db.cooldownsBorderUsingAlpha
 				frame:SetBackdropBorderColor(frame.color.r, frame.color.g, frame.color.b, ab)
 				frame.icon_frame:SetAlpha(a)
 				frame.cooldown:Hide()
@@ -450,23 +512,33 @@ local function CooldownFrame_OnUpdate(frame)
 			end
 			return
 		end
+
 		if tracked.cooldown_end and tracked.cooldown_end > now then
 			-- in cooldown
 			if frame.state ~= 3 then
 				frame.cooldown:SetReverse(false)
 				CooldownFrame_Set(frame.cooldown, tracked.cooldown_start, tracked.cooldown_end - tracked.cooldown_start, 1)
-				local a = Cooldowns:GetGroupDB(frame.unit, frame.group).cooldownsIconCooldownAlpha
-				local ab = Cooldowns:GetGroupDB(frame.unit, frame.group).cooldownsBorderCooldownAlpha
+				local a = db.cooldownsIconCooldownAlpha
+				local ab = db.cooldownsBorderCooldownAlpha
 				frame:SetBackdropBorderColor(frame.color.r, frame.color.g, frame.color.b, ab)
 				frame.icon_frame:SetAlpha(a)
 				frame.cooldown:Show()
 				frame.state = 3
+        frame.pulsing = false
+        LCG.ButtonGlow_Stop(frame)
 			end
 			return
+		end
+
+		if frame.state == 3 and db.cooldownsOffCdScale and db.cooldownsOffCdScale ~= 1 then -- was on CD
+      LCG.ButtonGlow_Stop(frame)
+			-- Just got off CD: pulse to show CD is over
+      CooldownFrame_Pulse(frame, db.cooldownsOffCdDuration, db.cooldownsOffCdScale)
 		end
 	end
 
 	-- not on cooldown or being used
+  LCG.ButtonGlow_Stop(frame)
 	if frame.tracked and frame.tracked.charges_detected and frame.tracked.charges and frame.tracked.max_charges and frame.tracked.charges < frame.tracked.max_charges then
 		-- show the charge cooldown
 		frame.cooldown:SetReverse(false)
@@ -505,10 +577,16 @@ local function GetSpellSortScore(unit, group, spellid)
 	end
 
 	local spelldata = CT:GetCooldownData(spellid)
+	if not spelldata then
+		return 0
+	end
 
 	if spelldata.replaces then
 		spellid = spelldata.replaces
 		spelldata = CT:GetCooldownData(spelldata.replaces)
+	end
+	if not spelldata then
+		return 0
 	end
 
 	if sortscore[spellid] then
@@ -591,7 +669,7 @@ local function GetCooldownList(unit, group)
 			local detected = tracked and tracked.detected
 			-- check if the spell has a cooldown valid for an arena, and check if it is a talent that has not yet been detected
 			if (not spelldata.cooldown or spelldata.cooldown < 600) and
-			   (not (spelldata.talent or spelldata.pet) or detected or not db.cooldownsHideTalentsUntilDetected) then
+				(not (spelldata.talent or spelldata.pet or spelldata.azerite) or detected or not db.cooldownsHideTalentsUntilDetected) then
 				-- check if the spell requires an aura
 				-- V: switched this to use FindAuraByName. It's unchecked but no spell uses it anyway
 				if not spelldata.requires_aura or AuraUtil.FindAuraByName(spelldata.requires_aura_name, unit, "HELPFUL") then
@@ -746,7 +824,7 @@ function Cooldowns:UpdateGroupIcons(unit, group)
 end
 
 local function CreateCooldownFrame(name, parent)
-	local frame = CreateFrame("Frame", name, parent)
+	local frame = CreateFrame("Frame", name, parent, "BackdropTemplate")
 
 	frame.icon_frame = CreateFrame("Frame", nil, frame)
 	frame.icon_frame:SetAllPoints()
@@ -782,7 +860,7 @@ function Cooldowns:CreateGroupFrame(unit, group)
 
 	-- create cooldown frame
 	if not gs.frame then
-		gs.frame = CreateFrame("Frame", "GladiusEx" .. self:GetName() .. "frame" .. unit, button)
+		gs.frame = CreateFrame("Frame", "GladiusEx" .. self:GetName() .. "frame" .. unit, button, "BackdropTemplate")
 		gs.frame:EnableMouse(false)
 
 		for i = 1, MAX_ICONS do
@@ -1401,6 +1479,53 @@ function Cooldowns:MakeGroupOptions(unit, group)
 							},
 						},
 					},
+					animation = {
+						type = "group",
+						name = L["Animation"],
+						desc = L["Animation settings on event"],
+						inline = true,
+						order = 1.5,
+						args = {
+							cooldownsOnUseScale = {
+								type = "range",
+								name = L["On-use scale"],
+								desc = L["The size the the icon should scale up to when the cooldown gets used"],
+								min = 1, max = 5, step = 0.5,
+								disabled = function() return not self:IsUnitEnabled(unit) end,
+								order = 1,
+							},
+							cooldownsOnUseDuration = {
+								type = "range",
+								name = L["On-use scale duration"],
+								desc = L["How long should the scale animation last"],
+								min = 0, max = 3, step = 0.1,
+								disabled = function() return not self:IsUnitEnabled(unit) end,
+								order = 1,
+							},
+							cooldownsOffCdScale = {
+								type = "range",
+								name = L["Off-cooldown scale"],
+								desc = L["The size the the icon should scale up to when the cooldown goes off CD"],
+								min = 1, max = 5, step = 0.5,
+								disabled = function() return not self:IsUnitEnabled(unit) end,
+								order = 1,
+							},
+							cooldownsOffCdDuration = {
+								type = "range",
+								name = L["Off-cooldown scale duration"],
+								desc = L["How long should the scale animation last"],
+								min = 0, max = 3, step = 0.1,
+								disabled = function() return not self:IsUnitEnabled(unit) end,
+								order = 1,
+							},
+							sep = {
+								type = "description",
+								name = "",
+								width = "full",
+								order = 4,
+							},
+						},
+					},
 					size = {
 						type = "group",
 						name = L["Size"],
@@ -1853,6 +1978,7 @@ function Cooldowns:MakeGroupOptions(unit, group)
 			if spelldata.knockback then tinsert(cats, L["cat:knockback"]) end
 			if spelldata.stun then tinsert(cats, L["cat:stun"]) end
 			if spelldata.immune then tinsert(cats, L["cat:immune"]) end
+			if spelldata.azerite then tinsert(cats, L["cat:azerite"]) end
 			-- specID takes category precedence over talent, so specify it to make it clear
 			if spelldata.specID and spelldata.talent then tinsert(cats, L["cat:talent"]) end
 			local catstr
@@ -1998,6 +2124,18 @@ function Cooldowns:MakeGroupOptions(unit, group)
 					}
 				end
 				args.items.args["spell" .. spellid] = spellconfig
+			elseif spelldata.azerite then
+				-- azerite
+				if not args.azerite then
+					args.azerite = {
+						type = "group",
+						name = L["Azerite"],
+						disabled = function() return not self:IsUnitEnabled(unit) end,
+						order = 14,
+						args = {}
+					}
+				end
+				args.azerite.args["spell" .. spellid] = spellconfig
 			elseif spelldata.pvp_trinket then
 				-- pvp trinket
 				if not args.pvp_trinket then
@@ -2190,7 +2328,7 @@ local function parse_desc(desc)
 
 	read_tag = function()
 		local op = read()
-		assert(op, "op is a faggot")
+		assert(op, "op could not be read")
 
 		local fn = op_table[op]
 		assert(fn, "no fn for " .. tostring(op))

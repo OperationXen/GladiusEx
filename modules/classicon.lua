@@ -48,7 +48,6 @@ local function GetDefaultImportantAuras()
 		[GladiusEx:SafeGetSpellName(2094)]      = 9,    -- Blind
 		[GladiusEx:SafeGetSpellName(203126)]    = 9,    -- Maim (Disorient)
 		[GladiusEx:SafeGetSpellName(207167)]    = 9,    -- Blinding Sleet
-		[GladiusEx:SafeGetSpellName(209753)]    = 9.1,  -- Cyclone (boomy)
 		[GladiusEx:SafeGetSpellName(33786)]     = 9.1,  -- Cyclone (rdruid)
 		[GladiusEx:SafeGetSpellName(221527)]    = 9.1,  -- Imprison
 		[GladiusEx:SafeGetSpellName(605)]       = 9,    -- Mind Control
@@ -82,6 +81,7 @@ local function GetDefaultImportantAuras()
 		[GladiusEx:SafeGetSpellName(105421)]    = 9,    -- Blinding Light
 		[GladiusEx:SafeGetSpellName(213691)]    = 9,    -- Scatter Shot
 		[GladiusEx:SafeGetSpellName(8122)]      = 9,    -- Psychic Scream
+		[GladiusEx:SafeGetSpellName(331866)]    = 9,    -- Door of Shadows's Agent of Chaos
 		[GladiusEx:SafeGetSpellName(20066)]     = 9,    -- Repentance
 		[GladiusEx:SafeGetSpellName(82691)]     = 9,    -- Ring of Frost
 		[GladiusEx:SafeGetSpellName(6770)]      = 9.1,  -- Sap
@@ -102,7 +102,6 @@ local function GetDefaultImportantAuras()
 		[GladiusEx:SafeGetSpellName(91797)]     = 8,    -- Monstrous Blow (Dark Transformation Ghoul)
 		[GladiusEx:SafeGetSpellName(89766)]     = 8,    -- Axe Toss (Felguard)
 		[GladiusEx:SafeGetSpellName(24394)]     = 8,    -- Intimidation
-		[GladiusEx:SafeGetSpellName(7922)]      = 8,    -- Charge Stun
 		[GladiusEx:SafeGetSpellName(1833)]      = 8,    -- Cheap Shot
 		[GladiusEx:SafeGetSpellName(199804)]    = 8,    -- Between the Eyes
 		[GladiusEx:SafeGetSpellName(226943)]    = 8,    -- Mind Bomb
@@ -136,7 +135,7 @@ local function GetDefaultImportantAuras()
 		[GladiusEx:SafeGetSpellName(16979)]     = 8,    -- Wild Charge
 		[GladiusEx:SafeGetSpellName(87204)]     = 8,    -- Sin and Punishment
 		[GladiusEx:SafeGetSpellName(117526)]    = 8,    -- Binding Shot
-		[GladiusEx:SafeGetSpellName(163505)]    = 8,    -- Rake
+		[163505]    = 8,    -- Rake
 		[GladiusEx:SafeGetSpellName(232055)]    = 8.3,  -- Fists of Fury
 		[GladiusEx:SafeGetSpellName(48792)]     = 8,    -- Icebound Fortitude
 		[GladiusEx:SafeGetSpellName(115078)]    = 8.1,  -- Paralysis
@@ -165,10 +164,11 @@ local function GetDefaultImportantAuras()
 		[GladiusEx:SafeGetSpellName(209426)]    = 7.1,  -- Darkness
 		[GladiusEx:SafeGetSpellName(1022)]      = 7.4,  -- Hand of Protection
 		[GladiusEx:SafeGetSpellName(18499)]     = 7.3,  -- Berserker Rage
-		[GladiusEx:SafeGetSpellName(1330)]      = 7,    -- Garrote (Silence)
+    [196364]                                = 7,    -- UA silence
+		[1330]                                  = 7,    -- Garrote (Silence)
 		[GladiusEx:SafeGetSpellName(15487)]     = 7,    -- Silence
-		[GladiusEx:SafeGetSpellName(236077)]     = 7,    -- Disarm
-		[GladiusEx:SafeGetSpellName(209749)]     = 7,    -- Faerie Swarm
+		[GladiusEx:SafeGetSpellName(236077)]    = 7,    -- Disarm
+		[GladiusEx:SafeGetSpellName(209749)]    = 7,    -- Faerie Swarm
 		[GladiusEx:SafeGetSpellName(199683)]    = 7,    -- Last Word
 		[GladiusEx:SafeGetSpellName(202933)]    = 7,    -- Spider Sting
 		[GladiusEx:SafeGetSpellName(47476)]     = 7.5,  -- Strangulate
@@ -176,7 +176,6 @@ local function GetDefaultImportantAuras()
 		[GladiusEx:SafeGetSpellName(116844)]    = 7,    -- Ring of Peace
 		[GladiusEx:SafeGetSpellName(207319)]    = 7,    -- Corpse Shield
 		[GladiusEx:SafeGetSpellName(81261)]     = 7,    -- Solar Beam
-		[GladiusEx:SafeGetSpellName(201325)]    = 7,    -- Zen Meditation
 		[GladiusEx:SafeGetSpellName(28730)]     = 7,    -- Arcane Torrent (Mana version)
 		[GladiusEx:SafeGetSpellName(80483)]     = 7,    -- Arcane Torrent (Focus version)
 		[GladiusEx:SafeGetSpellName(25046)]     = 7,    -- Arcane Torrent (Energy version)
@@ -248,7 +247,6 @@ local function GetDefaultImportantAuras()
 		[GladiusEx:SafeGetSpellName(236273)]     = 5,    -- Duel
 		[GladiusEx:SafeGetSpellName(207756)]     = 5,    -- Shadowy Duel
 		[GladiusEx:SafeGetSpellName(198111)]     = 5,    -- Temporal Shield
-		[GladiusEx:SafeGetSpellName(216890)]     = 5.1,  -- Spell Reflection
 		[GladiusEx:SafeGetSpellName(248519)]     = 5.1,  -- Interlope (bm pet redirect)
 		[GladiusEx:SafeGetSpellName(61336)]      = 5,    -- Survival Instincts
 
@@ -292,8 +290,6 @@ local function GetDefaultImportantAuras()
 		[GladiusEx:SafeGetSpellName(102558)]     = 3,    -- Incarnation: Son of Ursoc
 		[GladiusEx:SafeGetSpellName(19574)]      = 3,    -- Bestial Wrath
 		[GladiusEx:SafeGetSpellName(190319)]     = 3,    -- Combustion
-		[GladiusEx:SafeGetSpellName(193526)]     = 3,    -- Trueshot
-		[GladiusEx:SafeGetSpellName(216113)]     = 3,    -- Way of the Crane
 		[GladiusEx:SafeGetSpellName(1719)]       = 3,    -- Recklessness
 		[GladiusEx:SafeGetSpellName(186289)]     = 2.9,  -- Aspect of the Eagle
 		[GladiusEx:SafeGetSpellName(193530)]     = 2.9,  -- Aspect of the Wild
@@ -323,7 +319,6 @@ local function GetDefaultImportantAuras()
 		[GladiusEx:SafeGetSpellName(116014)]     = 2,    -- Rune of Power
 		[GladiusEx:SafeGetSpellName(221404)]     = 2.1,  -- Burning Determination
 		[GladiusEx:SafeGetSpellName(1966)]       = 2.1,  -- Feint
-		[GladiusEx:SafeGetSpellName(201325)]     = 2.1,  -- Zen Moment
 		[GladiusEx:SafeGetSpellName(122278)]     = 2.2,  -- Dampen
 		[GladiusEx:SafeGetSpellName(207498)]     = 2.1,  -- Ancestral Protection
 		[GladiusEx:SafeGetSpellName(206649)]     = 2,    -- Eye of Leotheras
@@ -383,6 +378,7 @@ function ClassIcon:OnEnable()
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE", "UNIT_AURA")
 	self:RegisterEvent("UNIT_MODEL_CHANGED")
 	self:RegisterMessage("GLADIUS_SPEC_UPDATE", "UNIT_AURA")
+	self:RegisterMessage("GLADIUSEX_INTERRUPT", "UNIT_AURA")
 
 	if not self.frame then
 		self.frame = {}
@@ -446,37 +442,37 @@ function ClassIcon:ScanAuras(unit)
 	local best_priority = 0
 	local best_name, best_icon, best_duration, best_expires
 
-	local interrupt = {Interrupt:GetInterruptFor(unit)}
-	if interrupt[1] then
-		return unpack(interrupt) 
-	end
-
-	local function handle_aura(name, spellid, icon, duration, expires)
-		local prio = self:GetImportantAura(unit, name) or self:GetImportantAura(unit, spellid)
-		-- V: make sure we have a best_expires before comparing it
-		if prio and prio > best_priority or (prio == best_priority and best_expires and expires < best_expires) then
-			best_name = name
-			best_icon = icon
-			best_duration = duration
-			best_expires = expires
-			best_priority = prio
-		end
-	end
-
 	-- debuffs
 	for index = 1, 40 do
 		local name, icon, _, _, duration, expires, _, _, _, spellid = UnitDebuff(unit, index)
 		if not name then break end
-		handle_aura(name, spellid, icon, duration, expires)
+		local prio = self:GetImportantAura(unit, name) or self:GetImportantAura(unit, spellid)
+		if prio and prio > best_priority or (prio == best_priority and best_expires and expires < best_expires) then
+			best_name, best_icon, best_duration, best_expires, best_priority = name, icon, duration, expires, prio
+		end
 	end
 
 	-- buffs
 	for index = 1, 40 do
 		local name, icon, _, _, duration, expires, _, _, _, spellid = UnitBuff(unit, index)
 		if not name then break end
-		handle_aura(name, spellid, icon, duration, expires)
+		local prio = self:GetImportantAura(unit, name) or self:GetImportantAura(unit, spellid)
+		-- V: make sure we have a best_expires before comparing it
+		if prio and prio > best_priority or (prio == best_priority and best_expires and expires < best_expires) then
+			best_name, best_icon, best_duration, best_expires, best_priority = name, icon, duration, expires, prio
+		end
 	end
-
+	
+	-- interrupts
+	local interrupt = GladiusEx:GetModule("Interrupts", true)
+	if interrupt then
+		interrupt = {interrupt:GetInterruptFor(unit)}
+		local name, icon, duration, expires, prio = unpack(interrupt)
+		if prio and prio > best_priority or (prio == best_priority and best_expires and expires < best_expires) then
+			best_name, best_icon, best_duration, best_expires, best_priority = name, icon, duration, expires, prio
+		end
+	end
+	
 	return best_name, best_icon, best_duration, best_expires
 end
 
@@ -624,7 +620,7 @@ function ClassIcon:SetClassIcon(unit)
 		left, right, top, bottom = 0, 1, 0, 1
 		needs_crop = true
 	elseif self.db[unit].classIconMode == "ROLE" and specID then
-		local _, _, _, _, _, role = GetSpecializationInfoByID(specID)
+		local _, _, _, _, role = GetSpecializationInfoByID(specID)
 		texture = [[Interface\LFGFrame\UI-LFG-ICON-ROLES]]
 		left, right, top, bottom = GetTexCoordsForRole(role)
 		needs_crop = false
@@ -866,7 +862,7 @@ function ClassIcon:GetOptions(unit)
 							disabled = function() return not self:IsUnitEnabled(unit) end,
 							min = 0,
 							max = 10,
-							step = 1,
+							step = 0.1,
 							order = 2,
 						},
 						add = {
@@ -956,7 +952,7 @@ function ClassIcon:SetupAuraOptions(options, unit, aura)
 				type= "range",
 				name = L["Priority"],
 				desc = L["Select what priority the aura should have - higher equals more priority"],
-				min = 0, softMax = 10, step = 1,
+				min = 0, softMax = 10, step = 0.1,
 				order = 2,
 			},
 			delete = {

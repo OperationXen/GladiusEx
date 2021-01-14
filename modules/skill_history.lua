@@ -67,7 +67,7 @@ function SkillHistory:CreateFrame(unit)
 	if not button then return end
 
 	-- create frame
-	self.frame[unit] = CreateFrame("Frame", "GladiusEx" .. self:GetName() .. unit, button)
+	self.frame[unit] = CreateFrame("Frame", "GladiusEx" .. self:GetName() .. unit, button, "BackdropTemplate")
 end
 
 function SkillHistory:Update(unit)
@@ -187,7 +187,10 @@ function SkillHistory:QueueSpell(unit, spellid, time)
 	-- end
 
 	-- hide uninteresting spells
-	if spellid == 178293 then -- Arena Inbounds Marker
+	-- 178293: Arena Inbounds Marker
+	-- 199642: Necrotic Aura
+	-- 199719: Heartstop Aura
+	if spellid == 178293 or spellid == 199642 or spellid == 199719 then
 		return
 	end
 

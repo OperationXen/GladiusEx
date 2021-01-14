@@ -24,7 +24,7 @@ local defaults = {
 		castBarColor = { r = 1, g = 1, b = 0, a = 1 },
 		castBarNotIntColor = { r = 1, g = 0, b = 0, a = 1 },
 		castBarBackgroundColor = { r = 0.5, g = 0.5, b = 0.5, a = 0.3 },
-		castBarBackgroundHideWhenNotCasting = true,
+		castBarBackgroundHideWhenNotCasting = false,
 		castBarGlobalTexture = true,
 		castBarTexture = GladiusEx.default_bar_texture,
 		castIcon = true,
@@ -240,7 +240,9 @@ local function CastUpdate(self)
 			local sparkPosition = value / self.maxValue * width
 			self.spark:SetPoint("CENTER", self.bar, "LEFT", sparkPosition, 0)
 
-			self.timeText:SetFormattedText(self.time_text_format, value, self.maxValue - value, self.maxValue, self.delay == 0 and "" or strformat(delay_format, self.delay))
+			if CastBar.db[self.unit].castTimeText then
+				self.timeText:SetFormattedText(self.time_text_format, value, self.maxValue - value, self.maxValue, self.delay == 0 and "" or strformat(delay_format, self.delay))
+			end
 		end
 	else
 		self:SetScript("OnUpdate", nil)
@@ -488,7 +490,7 @@ function CastBar:Update(unit)
 		fmt = (fmt or "") .. "%4$s"
 	end
 
-	self.frame[unit].time_text_format = fmt;
+	self.frame[unit].time_text_format = fmt
 
 	-- hide
 	self.frame[unit]:Hide()
